@@ -30,11 +30,11 @@ const login = async (req, res) => {
             throw new Error("Invalid email or password")
         }
 
-        if(isExists.password !== password){
+        if (isExists.password !== password) {
             throw new Error("Invalid email or password")
         }
 
-const ACCESS_TOKEN_EXPIRY = process.env.ACCESS_TOKEN_EXPIRY; // 15 minutes
+        const ACCESS_TOKEN_EXPIRY = process.env.ACCESS_TOKEN_EXPIRY; // 15 minutes
 
 
         let demoaccessToken = jwt.sign({ _id: isExists._id }, process.env.JWT_SECRET, {
@@ -51,7 +51,6 @@ const ACCESS_TOKEN_EXPIRY = process.env.ACCESS_TOKEN_EXPIRY; // 15 minutes
         });
 
 
-        console.log("Sending response with access token")
         res.status(200).json({ demoaccessToken, message: "Login successful", ok: true });
     }
 
@@ -65,9 +64,8 @@ const logout = async (req, res) => {
     try {
         const demoaccessToken = req.cookies.demoaccessToken// Assuming Bearer token
 
-        if(!demoaccessToken){
-            console.log(demoaccessToken)
-            return res.status(400).json({msg:"please login to logout", ok:false})
+        if (!demoaccessToken) {
+            return res.status(400).json({ msg: "please login to logout", ok: false })
         }
 
         res.clearCookie("demoaccessToken", {
@@ -90,7 +88,7 @@ const createTodo = async (req, res) => {
 
         let data = await TodoModel.create({ todoName, completed })
 
-        res.status(201).json({ msg: "creted successfully", data , ok:true})
+        res.status(201).json({ msg: "creted successfully", data, ok: true })
     }
     catch (err) {
         console.error("error from createTodo Api", err.message);
@@ -104,10 +102,10 @@ const getTodo = async (req, res) => {
         let data = await TodoModel.find({})
 
         if (!data.length) {
-          return res.status(200).json({msg:"no Todo available", data:[], ok:true})
+            return res.status(200).json({ msg: "no Todo available", data: [], ok: true })
         }
 
-        res.status(200).json({ msg: "fetched successfully", data , ok:true})
+        res.status(200).json({ msg: "fetched successfully", data, ok: true })
 
     }
     catch (err) {
@@ -129,7 +127,7 @@ const updateTodo = async (req, res) => {
             throw new Error("no items found with the id provided")
         }
 
-        res.status(200).json({ msg: "updated successfully", data , ok:true})
+        res.status(200).json({ msg: "updated successfully", data, ok: true })
 
 
     }
@@ -144,47 +142,38 @@ const deleteTodo = async (req, res) => {
     try {
         let id = req.params.id
 
-        let { completed } = req.body
-
         let data = await TodoModel.findByIdAndDelete(id, { returnDocument: "after" })
 
         if (!data) {
             throw new Error("no items found with the id provided")
         }
 
-        res.status(200).json({ msg: "deleted successfully", data , ok:true})
-
-
+        res.status(200).json({ msg: "deleted successfully", data, ok: true })
     }
     catch (err) {
         console.error("error from delteTodo Api", err.message);
         res.status(400).json({ message: err.message, error: "not deleted", ok: false });
-
     }
 }
 
 const isAuthenticatedUser = async (req, res) => {
     try {
-
-        console.log("calling isAuthenticatedUser api")
-
         const demoaccessToken = req.cookies?.demoaccessToken; // Get access token from cookies
-        // console.log(demoaccessToken)
+      
         if (!demoaccessToken) {
             return res.status(401).json({ authenticated: false, error: "authentication failed", ok: false });
         }
-        // console.log(process.env.JWT_SECRET)
-        // Verify the access token
+        
         jwt.verify(demoaccessToken, process.env.JWT_SECRET, (err) => {
             console.log(err)
             if (err) {
                 return res.status(401).json({ authenticated: false, ok: false });
             }
-            return res.status(200).json({ authenticated: true, ok:true }); // Send user role if authenticated
+            return res.status(200).json({ authenticated: true, ok: true }); // Send user role if authenticated
         });
     }
     catch (err) {
-        console.error("error from isAuthrviated user Api",err.message);
+        console.error("error from isAuthrviated user Api", err.message);
         res.status(401).json({ message: err.message, error: "not authenticated", ok: false });
     }
 }
