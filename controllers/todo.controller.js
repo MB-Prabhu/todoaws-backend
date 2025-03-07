@@ -43,7 +43,7 @@ const login = async (req, res) => {
 
         res.cookie("demoaccessToken", demoaccessToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production", // Set to true for HTTPS in production
+            secure: process.env.NODE_ENV === "production", 
             sameSite: process.env.NODE_ENV === "production" ? "None" : "Lax",
             maxAge: parseExpiry(ACCESS_TOKEN_EXPIRY) * 1000 // Convert seconds to ms
         });
